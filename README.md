@@ -13,7 +13,7 @@ A simple webapp called **`movr`** made using `flask`, `MySQL` for the backend, `
 - *TRANSACTIONS* shows all the product movements, *Elsewhere* denotes one of the locations (either 'from' or 'to') were empty.
 - *INVENTORY* shows how much of what product is present at each location.
 
-## Fronend
+## Frontend
 All panes in the ui can contract and expand except the *MOVE PRODUCTS* section.
 - Here all panes have been collpased. ![Collapsed](ss/collapsed.png)
 - All the panes have been expanded and an entry is being made in the locations column. ![Expanded](ss/expanded.png)
@@ -26,7 +26,7 @@ All panes in the ui can contract and expand except the *MOVE PRODUCTS* section.
 ## Running the code in dev mode
 - **server**
   - Install packages in `requirements.txt` using `pip`.
-  - Install MySQL, source the `create_db.sql` file, (the file can alternatively be read and executeed using a python script).
+  - Install MySQL, source the `create_db.sql` file, (the file can alternatively be read and executed using a python script).
   - Update the `server/.env` file with the appropriate values (see the `os.getenv` calls in `app.py`).
   - `$ flask run`
 - **frontend**
