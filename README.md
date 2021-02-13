@@ -10,7 +10,7 @@ A simple webapp called **`movr`** made using `flask`, `MySQL` for the backend, `
 - Once products or locations are added, they can be deleted and their names can be changed.
 - *MOVE PRODUCTS* is used for moving products into a location, or out of a location, or from one location to another, the quantity has to be specified.
 - Quantity restraints and tally is maintained by using a MySQL `trigger`.
-- *TRANSACTIONS* shows all the product movements, *Elsewhere* denotes one of the locations (either 'from' or 'to') were empty.
+- *TRANSACTIONS* shows all the product movements, *Elsewhere* denotes null at one of the locations (either 'from' or 'to').
 - *INVENTORY* shows how much of what product is present at each location.
 
 ## Frontend
