@@ -178,6 +178,7 @@ export default function ListPaper(props) {
       };
       console.log("adding :", transactionData);
       props.handleInsert(transactionData, props.title);
+      setValue("");
     }
   };
 

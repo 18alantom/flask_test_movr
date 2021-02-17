@@ -31,7 +31,6 @@ const appStyles = (theme) => ({
   },
 });
 
-// const toObject = (data) => data.map((p) => ({ id: p[0], name: p[1] }));
 const toObject = (data) =>
   data.reduce((obj, p) => {
     obj[p[0]] = p[1];
@@ -48,7 +47,6 @@ class App extends React.Component {
       report: [],
       message: "",
       openSnackBar: false,
-      // error: "",
     };
     this.fetchAndUpdateState = this.fetchAndUpdateState.bind(this);
     this.handleOnClose = this.handleOnClose.bind(this);
