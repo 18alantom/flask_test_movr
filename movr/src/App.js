@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Grid, withStyles } from "@material-ui/core";
+import { Box, Grid, withStyles, Snackbar } from "@material-ui/core";
 import logo from "./logo.svg";
 import ListPaper from "./components/ListPaper";
 import MoveBar from "./components/MoveBar";
@@ -31,6 +31,13 @@ const appStyles = (theme) => ({
   },
 });
 
+// const toObject = (data) => data.map((p) => ({ id: p[0], name: p[1] }));
+const toObject = (data) =>
+  data.reduce((obj, p) => {
+    obj[p[0]] = p[1];
+    return obj;
+  }, {});
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -39,14 +46,17 @@ class App extends React.Component {
       locations: [],
       movements: [],
       report: [],
-      error: "",
+      message: "",
+      openSnackBar: false,
+      // error: "",
     };
     this.fetchAndUpdateState = this.fetchAndUpdateState.bind(this);
+    this.handleOnClose = this.handleOnClose.bind(this);
     this.fetchForCRUD = this.fetchForCRUD.bind(this);
+    this.moveProduct = this.moveProduct.bind(this);
     this.deleteRow = this.deleteRow.bind(this);
     this.updateRow = this.updateRow.bind(this);
     this.insertRow = this.insertRow.bind(this);
-    this.moveProduct = this.moveProduct.bind(this);
   }
 
   componentDidMount() {
@@ -78,7 +88,11 @@ class App extends React.Component {
       });
   }
 
-  fetchForCRUD(endpoint, method, transactionData, updateList) {
+  handleOnClose(type) {
+    this.setState(() => ({ [type]: "" }));
+  }
+
+  fetchForCRUD(endpoint, method, transactionData, updateList, successMessage) {
     const url = API_URL + endpoint;
     const options = {
       method,
@@ -92,34 +106,36 @@ class App extends React.Component {
       .then((data) => {
         const [success, message] = data;
         if (!success) {
-          this.setState(() => ({ error: message }));
+          this.setState(() => ({ message, openSnackBar: true }));
         } else {
           this.fetchAndUpdateState(updateList);
+          this.setState(() => ({ message: successMessage, openSnackBar: true }));
         }
       })
       .catch((err) => {
         console.error(err);
+        this.setState(() => ({ message: err, openSnackBar: true }));
       });
   }
 
   deleteRow(transactionData) {
-    this.fetchForCRUD("data", "DELETE", transactionData, ALL);
+    this.fetchForCRUD("data", "DELETE", transactionData, ALL, "Item removed.");
   }
 
   updateRow(transactionData, name) {
-    this.fetchForCRUD("data", "PATCH", transactionData, [name]);
+    this.fetchForCRUD("data", "PATCH", transactionData, [name], "Item updated.");
   }
 
   insertRow(transactionData, name) {
-    this.fetchForCRUD("data", "PUT", transactionData, [name]);
+    this.fetchForCRUD("data", "PUT", transactionData, [name], "Item added.");
   }
 
   moveProduct(transactionData) {
-    this.fetchForCRUD("move", "PUT", transactionData, ["movements", "report"]);
+    this.fetchForCRUD("move", "PUT", transactionData, ["movements", "report"], "Product moved.");
   }
 
   render() {
-    const { products, locations, movements, report } = this.state;
+    const { products, locations, movements, report, message, openSnackBar } = this.state;
     const { classes } = this.props;
 
     return (
@@ -153,13 +169,14 @@ class App extends React.Component {
           </Grid>
 
           <Grid item xs={12}>
-            <MoveBar locations={locations} products={products} handleMovement={this.moveProduct} />
+            <MoveBar locations={toObject(locations)} products={toObject(products)} handleMovement={this.moveProduct} />
           </Grid>
 
           <Grid item xs={12}>
             <Report report={report} />
           </Grid>
         </Grid>
+        <Snackbar open={openSnackBar} autoHideDuration={2000} message={message} onClose={() => this.setState({ openSnackBar: false, message: "" })} />
       </Box>
     );
   }

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Grid, Paper, makeStyles, Select, MenuItem, InputLabel, TextField, IconButton, FormControl, Collapse } from "@material-ui/core";
 import { Send } from "@material-ui/icons";
 
+const ELSEWHERE = "ELSEWHERE";
 const moveBarStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(0),
@@ -48,31 +49,40 @@ export default function MoveBar(props) {
     error: "",
   });
 
-  const nullify = (val) => (val === undefined || val === "" ? null : val);
+  const nullify = (val) => (val === "" || val === undefined || val === ELSEWHERE ? null : val);
+
   const handleStateChange = (event) => {
-    const { name, value } = event.target;
-    console.log(event, name, value);
-    console.log(state);
-    setState({ ...state, [name]: value, error: "" });
+    const { name, value: id } = event.target;
+    console.log(event, name, id);
+    setState({ ...state, [name]: id, error: "" });
   };
 
   const handleSendClick = () => {
     if (state.product === "") {
-      setState({ ...state, error: "select a product" });
-    } else if (state.from[0] === state.to[0]) {
-      setState({ ...state, error: "from and to can't be the same" });
+      setState({ ...state, error: "select a 'product'" });
+    } else if (state.from === "" && state.to === "") {
+      setState({ ...state, error: "select at least one of 'from' or 'to'" });
+    } else if (state.from === state.to) {
+      setState({ ...state, error: "'from' and 'to' can't be the same" });
     } else if (state.quantity === 0) {
-      setState({ ...state, error: "quantity has to be greater than 0" });
+      setState({ ...state, error: "'quantity' has to be greater than 0" });
     } else {
       const { product, from, to, quantity } = state;
       const transactionData = {
-        product_id: product[0],
-        from: nullify(from[0]),
-        to: nullify(to[0]),
+        product_id: product,
+        from: nullify(from),
+        to: nullify(to),
         quantity: quantity,
       };
       console.log("moving", transactionData);
       props.handleMovement(transactionData);
+      setState({
+        product: "",
+        from: "",
+        to: "",
+        quantity: 0,
+        error: "",
+      });
     }
   };
 
@@ -87,11 +97,11 @@ export default function MoveBar(props) {
         <Grid item xs={3}>
           <FormControl className={classes.formControl}>
             <InputLabel>Product</InputLabel>
-            <Select value={state.product[1]} onChange={handleStateChange} name="product">
-              {props.products.map((item, index) => {
+            <Select value={state.product} onChange={handleStateChange} name="product">
+              {Object.keys(props.products).map((id, index) => {
                 return (
-                  <MenuItem value={item} key={index}>
-                    {item[1]}
+                  <MenuItem value={id} key={index}>
+                    {props.products[id]}
                   </MenuItem>
                 );
               })}
@@ -102,14 +112,14 @@ export default function MoveBar(props) {
         <Grid item xs={3}>
           <FormControl className={classes.formControl}>
             <InputLabel>From</InputLabel>
-            <Select value={state.from[1]} onChange={handleStateChange} name="from">
-              <MenuItem value={["", ""]}>
+            <Select value={state.from} onChange={handleStateChange} name="from">
+              <MenuItem value={ELSEWHERE}>
                 <em>Elsewhere</em>
               </MenuItem>
-              {props.locations.map((item, index) => {
+              {Object.keys(props.locations).map((id, index) => {
                 return (
-                  <MenuItem value={item} key={index}>
-                    {item[1]}
+                  <MenuItem value={id} key={index}>
+                    {props.locations[id]}
                   </MenuItem>
                 );
               })}
@@ -120,14 +130,14 @@ export default function MoveBar(props) {
         <Grid item xs={3}>
           <FormControl className={classes.formControl}>
             <InputLabel>To</InputLabel>
-            <Select value={state.to[1]} onChange={handleStateChange} name="to">
-              <MenuItem value={["", ""]}>
+            <Select value={state.to} onChange={handleStateChange} name="to">
+              <MenuItem value={ELSEWHERE}>
                 <em>Elsewhere</em>
               </MenuItem>
-              {props.locations.map((item, index) => {
+              {Object.keys(props.locations).map((id, index) => {
                 return (
-                  <MenuItem value={item} key={index}>
-                    {item[1]}
+                  <MenuItem value={id} key={index}>
+                    {props.locations[id]}
                   </MenuItem>
                 );
               })}

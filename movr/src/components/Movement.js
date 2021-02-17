@@ -91,7 +91,7 @@ export default function Movement(props) {
           </Grid>
 
           {props.movements.map((row, index) => (
-            <Tooltip title={`${row[4]}`} placement="left">
+            <Tooltip title={`${row[4]}`} placement="left" key={index}>
               <Grid container className={classes.row} key={index}>
                 <Grid item xs={1}>
                   <p className={classes.rowText}>{index + 1}</p>
